@@ -102,6 +102,8 @@ class Graph:
                 self.relax(u, v, distance, parents)
                 if v not in S:
                     minQ.insert_key((v, distance[v]))
+                    
+        # reconstruct route
         return S, parents
     
     def relax(self, u, v, distance, parents):
@@ -111,6 +113,16 @@ class Graph:
         if distance[v] > distance[u] + w(u, v):
             distance[v] = distance[u] + w(u, v)
             parents[v] = u
+
+    def getRoute(self, vertex):
+        vertexInd = -1
+        # Find index
+        for i in range(len(self.vertex)):
+            if self.eq(vertex[0], self.vertex[i][0]) and eq(vertex[1], self.vertex[i][1]):
+                vertexInd = i
+                break
+        route = []
+        while 
 
     def getNodes(self, indexList):
         """ Returns a list of nodes with index from indexList """
@@ -122,12 +134,12 @@ class Graph:
     def eq(self, x1, x2):
             return m.fabs(x1 - x2) < 0.001
 
-def main():
-    g = Graph()
-    g.addVertex((0, 0), 0.51)
-    g.addVertex((1, 1), 0.51)
-    g.addVertex((0.5, 0), 0.51)
-    g.addVertex((1.5, 1.0), 0.51)
-    g.addVertex((0.75, 0.75), 1.0)
-
-main()
+#def main():
+#    g = Graph()
+#    g.addVertex((0, 0), 0.51)
+#    g.addVertex((1, 1), 0.51)
+#    g.addVertex((0.5, 0), 0.51)
+#    g.addVertex((1.5, 1.0), 0.51)
+#    g.addVertex((0.75, 0.75), 1.0)
+#
+#main()
