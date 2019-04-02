@@ -54,7 +54,7 @@ class PQueue:
 
     def insert_key(self, key):
         self.len += 1
-        self.queue.append(m.inf)
+        self.queue.append((-1,m.inf))
         self.decrease_key(self.len - 1, key)
     
     def isEmpty(self):
