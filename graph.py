@@ -7,12 +7,13 @@ searching, and a facility for connected component
  """
 
 import math as m
-import queue as q
+import PQueue as q
 
 class Graph:
     def __init__(self):
         self.vertex = []
         self.edges = []
+        self.parents = []
         
     def addVertex(self, vertex, dMetric):
         """ Add a vertex to the graph. 
@@ -24,8 +25,8 @@ class Graph:
             self.vertex.append(vertex)
             self.edges.append([])
         else:
-        # Find the nearest point and add it to its adyacency list
-            nearestN = [len(self.edges)]
+            # Find the nearest point and add it to its adyacency list
+            nearestN = []
 #            minD = m.inf
             minIdx = -1
             for i in range(len(self.vertex)):
@@ -55,7 +56,7 @@ class Graph:
         vertexInd = -1
         # Find the index of the node
         for i in range(len(self.vertex)):
-            if self.eq(vertex[0], self.vertex[i][0]) and eq(vertex[1], self.vertex[i][1]):
+            if self.eq(vertex[0], self.vertex[i][0]) and self.eq(vertex[1], self.vertex[i][1]):
                 visited.append(1)
                 vertexInd = i
             else:
@@ -81,15 +82,15 @@ class Graph:
         vertexInd = -1
         # Find index
         for i in range(len(self.vertex)):
-            if self.eq(vertex[0], self.vertex[i][0]) and eq(vertex[1], self.vertex[i][1]):
+            if self.eq(vertex[0], self.vertex[i][0]) and self.eq(vertex[1], self.vertex[i][1]):
                 vertexInd = i
                 break
         # initialize single source
-        parents = []
+        self.parents = []
         distance = []
         for i in range(len(self.vertex)):
-            parents[i] = -1
-            distance[i] = m.inf
+            self.parents.append(-1)
+            distance.append(m.inf)
         distance[vertexInd] = 0
         # Initialize the queue
         minQ = q.PQueue()
@@ -97,32 +98,39 @@ class Graph:
         S = []
         while not minQ.isEmpty():
             u = minQ.extract_min()
-            S.appen(u[0])
-            for v in self.edges[u]:
-                self.relax(u, v, distance, parents)
+            S.append(u[0])
+            for v in self.edges[u[0]]:
+                self.relax(u[0], v, distance)
                 if v not in S:
                     minQ.insert_key((v, distance[v]))
                     
         # reconstruct route
-        return S, parents
+        route = self.getRoute(vertex)
+        return route
     
-    def relax(self, u, v, distance, parents):
+    def relax(self, u, v, distance):
         """ """
         def w(u, v, vertex):
             return m.sqrt((vertex[u][0] + vertex[v][0])**2 + (vertex[u][1] + vertex[v][1])**2)
-        if distance[v] > distance[u] + w(u, v):
-            distance[v] = distance[u] + w(u, v)
-            parents[v] = u
+        if distance[v] > distance[u] + w(u, v, self.vertex):
+            distance[v] = distance[u] + w(u, v, self.vertex)
+            self.parents[v] = u
 
     def getRoute(self, vertex):
         vertexInd = -1
         # Find index
         for i in range(len(self.vertex)):
-            if self.eq(vertex[0], self.vertex[i][0]) and eq(vertex[1], self.vertex[i][1]):
+            if self.eq(vertex[0], self.vertex[i][0]) and self.eq(vertex[1], self.vertex[i][1]):
                 vertexInd = i
                 break
         route = []
-        while 
+        endR = False
+        while not endR:
+            route.append(self.vertex[vertexInd])
+            if self.parents[vertexInd] == -1:
+                endR = True
+            vertexInd = self.parents[vertexInd]
+        return route
 
     def getNodes(self, indexList):
         """ Returns a list of nodes with index from indexList """
@@ -133,6 +141,12 @@ class Graph:
         
     def eq(self, x1, x2):
             return m.fabs(x1 - x2) < 0.001
+
+    def getVertex(self):
+        return self.vertex
+    
+    def getEdges(self):
+        return self.edges
 
 #def main():
 #    g = Graph()
