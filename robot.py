@@ -12,7 +12,7 @@ import numpy as np
 import random as r
 
 class robot:
-    def __init__(clientID, L, r):
+    def __init__(self, clientID, L, r):
         self.clientID = clientID
         # Get the necessary handles
         self.pioneer = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx', vrep.simx_opmode_blocking)
@@ -31,16 +31,16 @@ class robot:
         self.sState = []
         self.sPoints = []
         
-    def setDestination(xf, yf):
+    def setDestination(self, xf, yf):
         self.xf = xf
         self.yf = yf
     
-    def setWheelsVel(ur, ul):
+    def setWheelsVel(self, ur, ul):
         """ """
         vrep.simxSetJointTargetVelocity(self.clientID, self.motorR, ur, vrep.simx_opmode_streaming)
         vrep.simxSetJointTargetVelocity(self.clientID, self.motorL, ul, vrep.simx_opmode_streaming)
 
-    def setPointCtrl(Kv, Kh):
+    def setPointCtrl(self, Kv, Kh):
         """ Control of the robot using the set point control """
         # Get robot position and orientation
         _, rP = vrep.simxGetObjectPosition(self.clientID, self.pioneer, -1, vrep.simx_opmode_blocking)
@@ -54,12 +54,12 @@ class robot:
         # Compute the angular velocities of each wheel
         ur = (1/self.r) * v + (self.L / (2 * self.r)) * gamma
         ul = (1/self.r) * v - (self.L / (2 * self.r)) * gamma
-        setWheelsVel(self.clientID, self.motorR, self.motorL, ur, ul)
-        error = m.sqrt( (xf - rP[0]) ** 2 + (yf - rP[1]) ** 2 )
+        self.setWheelsVel(self.clientID, self.motorR, self.motorL, ur, ul)
+        error = m.sqrt( (self.xf - rP[0]) ** 2 + (self.yf - rP[1]) ** 2 )
 
         return error
         
-    def getPoints(pTrue, pFalse, w, h, s):
+    def getPoints(self, pTrue, pFalse, w, h, s):
         """ Get the position and orientation of the sensors. Get the points of the detected objects """
         def q2R(x,y,z,w):
             """ Transforms a quaternion to a rotation matrix """
@@ -111,12 +111,16 @@ class robot:
             sPoints.append([row, col])
         return sPosition, sState, sPoints
     
-    def getGridCoord(xw, yw, h, w, s):
+    def getGridCoord(self, xw, yw, h, w, s):
         """ Given a world coordinate, it returns it index on the grid """
         row = int(h / (2 * s) - m.floor(yw / s))
         col = int(m.ceil(xw / s) + w / (2 * s))
         return row, col
     
-    def getPosition():
+    def getPosition(self):
         _, rP = vrep.simxGetObjectPosition(self.clientID, self.pioneer, -1, vrep.simx_opmode_blocking)
         return rP
+    
+    def getOrientation(self):
+        _, rOr = vrep.simxGetObjectOrientation(self.clientID, self.pioneer, -1, vrep.simx_opmode_blocking)
+        return rOr
