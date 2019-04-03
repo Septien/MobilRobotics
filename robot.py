@@ -15,9 +15,9 @@ class robot:
     def __init__(self, clientID, L, r):
         self.clientID = clientID
         # Get the necessary handles
-        self.pioneer = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx', vrep.simx_opmode_blocking)
-        self.motorL = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', vrep.simx_opmode_blocking)
-        self.motorR = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', vrep.simx_opmode_blocking)
+        _, self.pioneer = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx', vrep.simx_opmode_blocking)
+        _, self.motorL = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx_leftMotor', vrep.simx_opmode_blocking)
+        _, self.motorR = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx_rightMotor', vrep.simx_opmode_blocking)
         self.usensor = []
         for i in range(1,17):
             err, s = vrep.simxGetObjectHandle(clientID, 'Pioneer_p3dx_ultrasonicSensor'+str(i), vrep.simx_opmode_blocking)
@@ -47,14 +47,14 @@ class robot:
         _, rOr = vrep.simxGetObjectOrientation(self.clientID, self.pioneer, -1, vrep.simx_opmode_blocking)
 
         # Get the desired velocity and rotation angle of the robot
-        v = Kv * m.sqrt( (self.xf - rP[0]) ** 2 + (self.yf - self.rP[1]) ** 2 )
+        v = Kv * m.sqrt( (self.xf - rP[0]) ** 2 + (self.yf - rP[1]) ** 2 )
         thetaD = m.atan2( self.yf - rP[1], self.xf - rP[0])
         gamma = Kh * (thetaD - rOr[2])
             
         # Compute the angular velocities of each wheel
         ur = (1/self.r) * v + (self.L / (2 * self.r)) * gamma
         ul = (1/self.r) * v - (self.L / (2 * self.r)) * gamma
-        self.setWheelsVel(self.clientID, self.motorR, self.motorL, ur, ul)
+        self.setWheelsVel(ur, ul)
         error = m.sqrt( (self.xf - rP[0]) ** 2 + (self.yf - rP[1]) ** 2 )
 
         return error
