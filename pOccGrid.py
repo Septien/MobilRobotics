@@ -19,7 +19,7 @@ class OccupancyGrid:
         self.pnzm = 0.01
         self.pznm = 0.01
 
-    def getSightLine(sPosition, sPoints):
+    def getSightLine(self, sPosition, sPoints):
         """ Get the points on the line of "sight" for each sensor """
         line = skd.line(sPosition[0], sPosition[1], sPoints[0], sPoints[1])
         return line
@@ -98,4 +98,8 @@ class OccupancyGrid:
             row, col = getGridCoord(pI[0], pI[1], h, w, s)
             row1, col1 = getGridCoord(pF[0], pF[1], h, w, s)
             rr, cc = skd.line(row, col, row1, col1)
-            self.occGrid[rr, cc] = 0.5
+            self.occGrid[rr, cc] = 0.2
+    
+    def save(self, name):
+        """ Save the occupancy grid on the file 'name' """
+        np.savetxt(name, self.occGrid)
